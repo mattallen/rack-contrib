@@ -22,13 +22,13 @@ module Rack
 
       headers = HeaderHash.new(headers)
       request = Rack::Request.new(env)
-      
+
       if is_json?(headers) && has_callback?(request)
         response = pad(request.params.delete('callback'), response)
 
         # No longer json, its javascript!
         headers['Content-Type'].gsub!('json', 'javascript')
-        
+
         # Set new Content-Length, if it was set before we mutated the response body
         if headers['Content-Length']
           length = response.to_ary.inject(0) { |len, part| len + bytesize(part) }
@@ -37,13 +37,13 @@ module Rack
       end
       [status, headers, response]
     end
-    
+
     private
-    
+
     def is_json?(headers)
-      headers['Content-Type'].include?('application/json')
+      headers['Content-Type'] && headers['Content-Type'].include?('application/json')
     end
-    
+
     def has_callback?(request)
       request.params.include?('callback')
     end
